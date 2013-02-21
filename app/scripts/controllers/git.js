@@ -5,14 +5,11 @@ var BRANCH_URL = "http://gitweb.antea.bogus/?p=bbox.git;a=heads";
 var MAX_COMMIT_COUNT = 5; //Variabile che memorizza il numero massimo di commit da stampare
 var MAX_BRANCH_COUNT = 5; //Variabile che memorizza il numero massimo di branch da stampare
 
-angular.module('yoTest1App').controller('GitController', function ($scope) {
+angular.module('yoTest1App').controller('GitController', function ($scope, $http) {
     $scope.commits = [];
     $scope.branches = [];
 
-    $.get(COMMIT_URL, function(data, status) { 
-        if ("success" !== status) {
-                return;
-        }
+    $http.get(COMMIT_URL).success(function(data, status) { 
         var commits = [];
         $(data).find("item").each(function(i) {
             if (i === MAX_COMMIT_COUNT) {
@@ -26,12 +23,11 @@ angular.module('yoTest1App').controller('GitController', function ($scope) {
             };
         });
         $scope.commits = commits;
+    }).error(function(data, status) {
+        console.log("Error in commit fetch: " + status);
     });
 
-    $.get(BRANCH_URL, function(data, status) {
-        if ("success" !== status) {
-                return;
-        }
+    $http.get(BRANCH_URL).success(function(data, status) {
         var branches = [];
         $(data).find("tr").each(function(i) {
             if (i === MAX_BRANCH_COUNT) {
@@ -44,6 +40,8 @@ angular.module('yoTest1App').controller('GitController', function ($scope) {
             };
         });
         $scope.branches= branches;
+    }).error(function(data, status) {
+        console.log("Error in branches fetch: " + status);
     });
   });
 
